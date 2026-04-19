@@ -53,7 +53,7 @@
   <div class="w-full max-w-xl sm:max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-6 sm:p-10 relative">
 
     <!-- Dark / Light Toggle -->
-    <button
+    <button type="button" type="button"
       @click="toggleDark()"
       class="fixed top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 transition-colors cursor-pointer"
       :title="dark ? 'Mode clair' : 'Mode sombre'"
@@ -109,7 +109,7 @@
         </template>
       </div>
 
-      <button
+      <button type="button" type="button"
         @click="screen = 'config'"
         class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 active:scale-[.98] text-white font-bold rounded-xl transition-all duration-150 cursor-pointer text-sm sm:text-base"
       >
@@ -130,21 +130,21 @@
 
       <!-- Level selector -->
       <div class="flex justify-center gap-2 sm:gap-3 mb-6">
-        <button
+        <button type="button" type="button"
           @click="selectedLevel = 'facile'"
           :class="selectedLevel === 'facile'
             ? 'bg-emerald-500 border-emerald-500 text-white'
             : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-emerald-400'"
           class="px-4 py-2 border-2 rounded-full text-sm font-semibold transition-all duration-150 cursor-pointer"
         >Facile</button>
-        <button
+        <button type="button" type="button"
           @click="selectedLevel = 'moyen'"
           :class="selectedLevel === 'moyen'
             ? 'bg-amber-400 border-amber-400 text-black'
             : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-amber-400'"
           class="px-4 py-2 border-2 rounded-full text-sm font-semibold transition-all duration-150 cursor-pointer"
         >Moyen</button>
-        <button
+        <button type="button" type="button"
           @click="selectedLevel = 'difficile'"
           :class="selectedLevel === 'difficile'
             ? 'bg-red-500 border-red-500 text-white'
@@ -163,7 +163,7 @@
             </div>
             <div class="flex gap-1">
               <template x-for="n in [0,1,2,3,4,5]" :key="n">
-                <button
+                <button type="button" type="button"
                   @click="topicSelections[topic] = n"
                   :class="topicSelections[topic] === n
                     ? 'text-white scale-110'
@@ -184,16 +184,16 @@
           Total : <strong class="text-indigo-500 text-base" x-text="configTotal"></strong> questions sélectionnées
         </p>
         <div class="flex gap-2 mb-3">
-          <button
+          <button type="button" type="button"
             @click="setAllTopics(5)"
             class="flex-1 py-2 text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg transition-colors cursor-pointer"
           >Tout à 5</button>
-          <button
+          <button type="button" type="button"
             @click="setAllTopics(0)"
             class="flex-1 py-2 text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg transition-colors cursor-pointer"
           >Tout désactiver</button>
         </div>
-        <button
+        <button type="button" type="button"
           @click="startConfiguredQuiz()"
           :disabled="configTotal === 0"
           class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[.98] text-white font-bold rounded-xl transition-all duration-150 cursor-pointer text-sm sm:text-base"
@@ -204,7 +204,7 @@
         >Veuillez sélectionner au moins une question</p>
       </div>
 
-      <button
+      <button type="button" type="button"
         @click="screen = 'welcome'"
         class="w-full mt-3 py-2.5 text-sm font-semibold border-2 border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white rounded-xl transition-all duration-150 cursor-pointer"
       >← Retour à l'accueil</button>
@@ -247,7 +247,7 @@
       <div class="flex flex-col gap-2.5 mb-4">
         <template x-if="currentQuestion">
           <template x-for="(opt, i) in currentQuestion.opts" :key="i">
-            <button
+            <button type="button" type="button"
               @click="selectAnswer(i)"
               :disabled="answered"
               :class="{
@@ -285,7 +285,7 @@
       ></div>
 
       <!-- Next button -->
-      <button
+      <button type="button" type="button"
         x-show="answered"
         x-transition
         @click="nextQuestion()"
@@ -323,11 +323,11 @@
         </template>
       </div>
 
-      <button
+      <button type="button" type="button"
         @click="restartQuiz()"
         class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 active:scale-[.98] text-white font-bold rounded-xl transition-all duration-150 cursor-pointer text-sm sm:text-base mb-3"
       >Recommencer le Quiz</button>
-      <button
+      <button type="button" type="button"
         @click="screen = 'welcome'"
         class="w-full py-3 text-sm font-semibold border-2 border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white rounded-xl transition-all duration-150 cursor-pointer"
       >← Retour à l'accueil</button>
