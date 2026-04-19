@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz QCM — Web &amp; Dev Technologies</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface2: #273549;
+      --border: #334155;
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --correct: #22c55e;
+      --wrong: #ef4444;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --tag-laravel: #f05340;
+      --tag-php: #7c3aed;
+      --tag-js: #eab308;
+      --tag-python: #3b82f6;
+      --tag-html: #f97316;
+      --tag-css: #06b6d4;
+      --tag-react: #61dafb;
+      --tag-poo: #10b981;
+      --tag-uml: #f59e0b;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 720px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+    }
+
+    /* ── WELCOME ── */
+    .welcome-title {
+      font-size: 2rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: .5rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .welcome-sub {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: .95rem;
+    }
+
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .75rem;
+      margin-bottom: 2rem;
+    }
+
+    .topic-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .35rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: .75rem;
+      padding: 1rem .5rem;
+      font-size: .8rem;
+      font-weight: 600;
+    }
+
+    .topic-badge .dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+
+    .topic-badge span { color: var(--muted); font-size: .75rem; font-weight: 400; }
+
+    .info-row {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      color: var(--muted);
+      font-size: .875rem;
+    }
+
+    .info-item strong { color: var(--text); }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: .9rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: .75rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+      text-align: center;
+    }
+
+    .btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      margin-top: .75rem;
+    }
+
+    .btn-outline:hover { background: var(--accent); color: #fff; }
+
+    /* ── QUIZ ── */
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .progress-wrap {
+      flex: 1;
+      background: var(--surface2);
+      border-radius: 99px;
+      height: 8px;
+      margin: 0 1rem;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      border-radius: 99px;
+      transition: width .4s ease;
+    }
+
+    .q-count { font-size: .8rem; color: var(--muted); white-space: nowrap; }
+
+    .topic-tag {
+      display: inline-block;
+      padding: .25rem .75rem;
+      border-radius: 99px;
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+
+    .topic-tag.Laravel  { background: var(--tag-laravel); }
+    .topic-tag.PHP      { background: var(--tag-php); }
+    .topic-tag.JS       { background: var(--tag-js); color: #000; }
+    .topic-tag.Python   { background: var(--tag-python); }
+    .topic-tag.HTML     { background: var(--tag-html); }
+    .topic-tag.CSS      { background: var(--tag-css); }
+    .topic-tag.React    { background: var(--tag-react); color: #000; }
+    .topic-tag.POO      { background: var(--tag-poo); }
+    .topic-tag.UML      { background: var(--tag-uml); color: #000; }
+
+    .question-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: .65rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      background: var(--surface2);
+      border: 2px solid var(--border);
+      border-radius: .75rem;
+      padding: .85rem 1rem;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      font-size: .95rem;
+      color: var(--text);
+      text-align: left;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: #2d3f5a;
+    }
+
+    .option-btn .letter {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: background .15s;
+    }
+
+    .option-btn.correct {
+      border-color: var(--correct);
+      background: rgba(34,197,94,.1);
+    }
+
+    .option-btn.correct .letter { background: var(--correct); color: #fff; }
+
+    .option-btn.wrong {
+      border-color: var(--wrong);
+      background: rgba(239,68,68,.1);
+    }
+
+    .option-btn.wrong .letter { background: var(--wrong); color: #fff; }
+
+    .option-btn:disabled { cursor: default; }
+
+    .feedback-box {
+      background: var(--surface2);
+      border-radius: .75rem;
+      padding: .9rem 1rem;
+      font-size: .875rem;
+      border-left: 4px solid var(--correct);
+      color: var(--muted);
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .feedback-box.show { display: block; }
+    .feedback-box.wrong-fb { border-color: var(--wrong); }
+
+    .next-btn { margin-top: .5rem; }
+
+    /* ── SCORE ── */
+    .score-circle {
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      font-weight: 900;
+      border: 6px solid var(--accent);
+      background: radial-gradient(circle, #1e293b, #0f172a);
+    }
+
+    .score-circle .score-label { font-size: .7rem; color: var(--muted); font-weight: 400; margin-top: -.3rem; }
+
+    .score-title {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: .5rem;
+    }
+
+    .score-sub {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: .9rem;
+    }
+
+    .breakdown {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: .65rem;
+      margin-bottom: 2rem;
+    }
+
+    .breakdown-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: .75rem;
+      padding: .75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-size: .85rem;
+    }
+
+    .breakdown-item .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .breakdown-item .score-val {
+      margin-left: auto;
+      font-weight: 700;
+      color: var(--accent-hover);
+    }
+
+    .hidden { display: none !important; }
+
+    /* ── CONFIG SCREEN ── */
+    .config-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: .5rem;
+      color: var(--text);
+    }
+
+    .config-sub {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      font-size: .9rem;
+    }
+
+    .level-selector {
+      display: flex;
+      justify-content: center;
+      gap: .75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .level-btn {
+      padding: .6rem 1.25rem;
+      border: 2px solid var(--border);
+      border-radius: 99px;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .level-btn:hover { border-color: var(--accent); color: var(--text); }
+    .level-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .level-btn.facile.active { background: #22c55e; border-color: #22c55e; }
+    .level-btn.moyen.active { background: #eab308; border-color: #eab308; color: #000; }
+    .level-btn.difficile.active { background: #ef4444; border-color: #ef4444; }
+
+    .topics-config {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      margin-bottom: 1.5rem;
+      max-height: 320px;
+      overflow-y: auto;
+      padding-right: .5rem;
+    }
+
+    .topics-config::-webkit-scrollbar { width: 6px; }
+    .topics-config::-webkit-scrollbar-track { background: var(--surface2); border-radius: 3px; }
+    .topics-config::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .topic-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: .75rem;
+      padding: .75rem 1rem;
+    }
+
+    .topic-row-left {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+    }
+
+    .topic-row .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .topic-row span { font-size: .9rem; font-weight: 600; }
+
+    .pill-group {
+      display: flex;
+      gap: .35rem;
+    }
+
+    .pill {
+      width: 28px; height: 28px;
+      border: none;
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .pill:hover { background: var(--border); color: var(--text); }
+    .pill.active {
+      color: #fff;
+      transform: scale(1.1);
+    }
+
+    .topic-row[data-topic="Laravel"] .pill.active { background: var(--tag-laravel); }
+    .topic-row[data-topic="PHP"] .pill.active { background: var(--tag-php); }
+    .topic-row[data-topic="JS"] .pill.active { background: var(--tag-js); }
+    .topic-row[data-topic="Python"] .pill.active { background: var(--tag-python); }
+    .topic-row[data-topic="HTML"] .pill.active { background: var(--tag-html); }
+    .topic-row[data-topic="CSS"] .pill.active { background: var(--tag-css); }
+    .topic-row[data-topic="React"] .pill.active { background: var(--tag-react); }
+    .topic-row[data-topic="POO"] .pill.active { background: var(--tag-poo); }
+    .topic-row[data-topic="UML"] .pill.active { background: var(--tag-uml); }
+
+    .config-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 1.25rem;
+    }
+
+    .config-total {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: .95rem;
+      color: var(--muted);
+    }
+
+    .config-total strong { color: var(--accent); font-size: 1.1rem; }
+
+    .config-actions {
+      display: flex;
+      gap: .5rem;
+      margin-bottom: 1rem;
+    }
+
+    .config-actions button {
+      flex: 1;
+      padding: .65rem;
+      border: 1px solid var(--border);
+      border-radius: .5rem;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: .8rem;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .config-actions button:hover { background: var(--border); color: var(--text); }
+
+    .btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .config-hint {
+      text-align: center;
+      font-size: .75rem;
+      color: var(--wrong);
+      display: none;
+    }
+
+    .config-hint.show { display: block; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- ══ WELCOME SCREEN ══ -->
+  <div id="screen-welcome">
+    <div class="welcome-title">Quiz QCM</div>
+    <div class="welcome-sub">Technologies Web &amp; Développement</div>
+
+    <button class="btn" onclick="showConfig()" style="margin-top:2rem;">
+      ⚙️ Configurer le Quiz →
+    </button>
+  </div>
+  <div id="screen-config" class="hidden">
+    <div class="config-title">⚙️ Configurer le Quiz</div>
+    <div class="config-sub">Choisissez le niveau et le nombre de questions par thème</div>
+
+    <div class="level-selector">
+      <button class="level-btn facile" data-level="facile" onclick="selectLevel('facile')">Facile</button>
+      <button class="level-btn moyen active" data-level="moyen" onclick="selectLevel('moyen')">Moyen</button>
+      <button class="level-btn difficile" data-level="difficile" onclick="selectLevel('difficile')">Difficile</button>
+    </div>
+
+    <div class="topics-config" id="topics-config"></div>
+
+    <div class="config-footer">
+      <div class="config-total">Total : <strong id="config-total">45</strong> questions sélectionnées</div>
+      <div class="config-actions">
+        <button onclick="setAllTopics(5)">Tout à 5</button>
+        <button onclick="setAllTopics(0)">Tout désactiver</button>
+      </div>
+      <button class="btn" id="btn-start-config" onclick="startConfiguredQuiz()">Commencer le Quiz →</button>
+      <div class="config-hint" id="config-hint">Veuillez sélectionner au moins une question</div>
+    </div>
+  </div>
+
+  <!-- ══ QUIZ SCREEN ══ -->
+  <div id="screen-quiz" class="hidden">
+    <div class="quiz-header">
+      <span class="q-count" id="q-count">1 / 30</span>
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+      </div>
+      <span class="q-count" id="score-live">Score: 0</span>
+    </div>
+
+    <div class="topic-tag" id="topic-tag">Laravel</div>
+    <div class="question-text" id="question-text">Question...</div>
+
+    <div class="options-list" id="options-list"></div>
+
+    <div class="feedback-box" id="feedback-box"></div>
+
+    <button class="btn next-btn" id="next-btn" onclick="nextQuestion()" style="display:none">
+      Question suivante →
+    </button>
+  </div>
+
+  <!-- ══ SCORE SCREEN ══ -->
+  <div id="screen-score" class="hidden">
+    <div class="score-circle" id="score-circle">
+      <span id="final-score">0</span>
+      <span class="score-label">/ 45</span>
+    </div>
+    <div class="score-title" id="score-title">Résultat</div>
+    <div class="score-sub" id="score-sub">Voici votre performance par thème :</div>
+
+    <div class="breakdown" id="breakdown"></div>
+
+    <button class="btn" onclick="restartQuiz()">Recommencer le Quiz</button>
+    <button class="btn btn-outline" onclick="showWelcome()">Retour à l'accueil</button>
+  </div>
+
+</div>
+
+<script>
+const TOPICS = ["Laravel","PHP","JS","Python","HTML","CSS","React","POO","UML"];
+const TOPIC_COLORS = {
+  Laravel: "#f05340", PHP: "#7c3aed", JS: "#eab308", Python: "#3b82f6",
+  HTML: "#f97316", CSS: "#06b6d4", React: "#61dafb", POO: "#10b981", UML: "#f59e0b"
+};
+
+const QUESTIONS = [
+  // ═══ LARAVEL FACILE ═══
+  { topic: "Laravel", level: "facile", q: "Comment créer un nouveau projet Laravel ?", opts: ["laravel new nom", "php artisan new nom", "composer create-project laravel nom", "install laravel"], ans: 2, exp: "<code>composer create-project laravel/laravel nom</code> crée un nouveau projet." },
+  { topic: "Laravel", level: "facile", q: "Quelle commande affiche la liste des routes dans Laravel ?", opts: ["php artisan route:list", "php artisan routes", "php artisan list routes", "php artisan show:routes"], ans: 0, exp: "<code>php artisan route:list</code> affiche toutes les routes enregistrées." },
+  { topic: "Laravel", level: "facile", q: "Comment exécuter les migrations de base de données ?", opts: ["php artisan migrate", "php artisan db:migrate", "php artisan database:migrate", "php artisan run:migration"], ans: 0, exp: "<code>php artisan migrate</code> applique les migrations en attente." },
+  { topic: "Laravel", level: "facile", q: "Quel fichier contient la configuration principale de Laravel ?", opts: [".env", "config.php", "app.php", "laravel.config"], ans: 0, exp: "Le fichier <code>.env</code> contient les variables d'environnement et la config." },
+  { topic: "Laravel", level: "facile", q: "Comment ouvrir le tinker interactif dans Laravel ?", opts: ["php artisan tinker", "php artisan shell", "php artisan console", "php artisan interact"], ans: 0, exp: "<code>php artisan tinker</code> ouvre un REPL interactif pour tester du code." },
+
+  // ═══ LARAVEL MOYEN ═══
+  { topic: "Laravel", level: "moyen", q: "Quelle commande Artisan permet de créer un nouveau contrôleur ?", opts: ["php artisan make:model", "php artisan make:controller", "php artisan create:controller", "php artisan new:controller"], ans: 1, exp: "<code>php artisan make:controller NomController</code> crée un contrôleur." },
+  { topic: "Laravel", level: "moyen", q: "Dans Laravel, quel fichier contient la configuration de la base de données ?", opts: [".env et config/database.php", "config/app.php", "routes/web.php", "bootstrap/app.php"], ans: 0, exp: "Les paramètres DB sont dans <code>.env</code> et lus par <code>config/database.php</code>." },
+  { topic: "Laravel", level: "moyen", q: "Quelle méthode Eloquent permet de récupérer tous les enregistrements ?", opts: ["Model::find()", "Model::first()", "Model::all()", "Model::get()"], ans: 2, exp: "<code>Model::all()</code> retourne une Collection de tous les enregistrements." },
+  { topic: "Laravel", level: "moyen", q: "À quoi sert le middleware <code>auth</code> ?", opts: ["Compresser les réponses HTTP", "Vérifier que l'utilisateur est authentifié", "Gérer les erreurs 404", "Valider les formulaires"], ans: 1, exp: "Le middleware <code>auth</code> protège les routes et redirige si non authentifié." },
+  { topic: "Laravel", level: "moyen", q: "Comment définir une relation « un à plusieurs » dans Eloquent ?", opts: ["belongsTo()", "hasMany()", "hasManyThrough()", "morphMany()"], ans: 1, exp: "<code>hasMany()</code> est utilisé sur le modèle parent pour une relation 1:N." },
+
+  // ═══ LARAVEL DIFFICILE ═══
+  { topic: "Laravel", level: "difficile", q: "Quelle méthode utilise-t-on pour écraser un événement système dans un ServiceProvider ?", opts: ["Event::listen()", "Event::override()", "Event::subscribe()", "Event::handle()"], ans: 0, exp: "On utilise <code>Event::listen()</code> dans le boot() du ServiceProvider pour écraser un événement." },
+  { topic: "Laravel", level: "difficile", q: "Comment implémenter un singleton avec Laravel Container ?", opts: ["$app->singleton()", "$app->single()", "$app->makeSingle()", "$app->instance()"], ans: 0, exp: "<code>$app->singleton('nom', closure)</code> enregistre une liaison résolue une seule fois." },
+  { topic: "Laravel", level: "difficile", q: "Quel est le rôle du Morph Model dans Eloquent ( polymorphic ) ?", opts: ["Créer plusieurs relations", "Lier un modèle à plusieurs modèles parents", "Dupliquer des modèles", "Hériter dynamiquement"], ans: 1, exp: "Le Morph permet à un modèle d'appartenir à plusieurs modèles via une seule colonne." },
+  { topic: "Laravel", level: "difficile", q: "Comment fonctionne le lazy loading vs eager loading dans Eloquent ?", opts: ["Eager charge tout upfront, lazy à la demande", "Lazy charge les relations uniquement après le premier accès", "Il n'y a pas de différence", "Eager désactive les relations"], ans: 0, exp: "Eager charge les relations en une seule requête (N+1 solve), lazy les charge séparément." },
+  { topic: "Laravel", level: "difficile", q: "Quelle méthode de pipeline permet d'appliquer des transformations successives à une requête ?", opts: ["Pipeline::send()->through()->then()", "Request::pipe()->to()->finish()", "Query::transform()->chain()", "Route::apply()->next()"], ans: 0, exp: "Le pattern <code>Pipeline</code> permet d'enchaîner des middleware/business logic." },
+
+  // ═══ PHP FACILE ═══
+  { topic: "PHP", level: "facile", q: "Comment declares-on une variable en PHP ?", opts: ["var x = 5;", "$x = 5;", "variable x = 5;", "let x = 5;"], ans: 1, exp: "En PHP, les variables commencent par <code>$</code> : <code>$x = 5;</code>" },
+  { topic: "PHP", level: "facile", q: "Quelle balise PHP est-elle utilisée pour insérer du PHP dans du HTML ?", opts: ["&lt;?php ... ?&gt;", "&lt;php&gt;...&lt;/php&gt;", "&lt;script&gt;...&lt;/script&gt;", "&lt;? ... ?&gt;"], ans: 0, exp: "Les balises <code>&lt;?php ... ?&gt;</code> sont le standard PHP." },
+  { topic: "PHP", level: "facile", q: "Comment afficher du texte en PHP ?", opts: ["echo 'texte';", "print 'texte';", "Les deux A et B", "display('texte');"], ans: 2, exp: "<code>echo</code> et <code>print</code> permettent tous deux d'afficher du texte." },
+  { topic: "PHP", level: "facile", q: "Comment crée-t-on un tableau indexé en PHP ?", opts: ["$tableau = array(1, 2, 3);", "$tableau = [1, 2, 3];", "Les deux A et B sont correctes", "$tableau = new Array(1, 2, 3);"], ans: 2, exp: "Les deux syntaxes <code>array()</code> et <code>[]</code> sont valides." },
+  { topic: "PHP", level: "facile", q: "Quelle superglobale contient les données d'un formulaire POST ?", opts: ["$POST", "$_POST", "$formData", "$request"], ans: 1, exp: "<code>$_POST</code> est la superglobale qui reçoit les données d'un formulaire POST." },
+
+  // ═══ PHP MOYEN ═══
+  { topic: "PHP", level: "moyen", q: "Quelle est la différence entre <code>==</code> et <code>===</code> ?", opts: ["Aucune différence", "== compare valeur et type, === compare valeur", "== compare valeur seulement, === compare valeur et type", "=== réservé aux chaînes"], ans: 2, exp: "<code>==</code> comparaison lâche, <code>===</code> comparaison stricte (type + valeur)." },
+  { topic: "PHP", level: "moyen", q: "Quelle fonction trie un tableau en conservant les associations clé-valeur ?", opts: ["sort()", "usort()", "asort()", "ksort()"], ans: 2, exp: "<code>asort()</code> trie par valeur en gardant les clés." },
+  { topic: "PHP", level: "moyen", q: "Que retourne <code>isset($var)</code> si <code>$var</code> = null ?", opts: ["true", "false", "null", "Une erreur"], ans: 1, exp: "<code>isset()</code> retourne <code>false</code> si la variable est <code>null</code>." },
+  { topic: "PHP", level: "moyen", q: "Comment déclarer une constante de classe ?", opts: ["define('NOM', valeur)", "const NOM = valeur; (dans la classe)", "static $NOM = valeur;", "final $NOM = valeur;"], ans: 1, exp: "Les constantes de classe utilisent <code>const NOM = valeur;</code>." },
+  { topic: "PHP", level: "moyen", q: "Quel est le rôle de <code>PDO::prepare()</code> ?", opts: ["Exécute directement SQL", "Prépare requête pour éviter injections", "Crée une connexion DB", "Ferme connexion PDO"], ans: 1, exp: "<code>prepare()</code> crée une requête préparée protège contre les injections." },
+
+  // ═══ PHP DIFFICILE ═══
+  { topic: "PHP", level: "difficile", q: "Comment implémenter le pattern Singleton en PHP ?", opts: ["Constructeur privé + instance()", "Mot-clé singleton", "Hériter de Singleton", "$this->singleton"], ans: 0, exp: "Le Singleton : constructeur privé + méthode statique retournant l'instance unique." },
+  { topic: "PHP", level: "difficile", q: "Quelle est la différence entre spl_autoload_register et __autoload ?", opts: ["__autoload est obsolète, spl_ accepte plusieurs", "__autoload plus rapide", "spl_ est pour les classes abstraites", "Aucune différence"], ans: 0, exp: "<code>spl_autoload_register()</code> permet plusieurs fonctions d'autoload, <code>__autoload</code> est obsolète." },
+  { topic: "PHP", level: "difficile", q: "Comment fonctionne les magique __call et __callStatic ?", opts: ["Appelées sur méthodes inexistantes d'objet ou classe", "Pour appeler des méthodes privées", "Pour les méthodes statiques uniquement", "Identiques à __invoke"], ans: 0, exp: "<code>__call</code> intercepte les appels à méthodes inexistantes d'un objet." },
+  { topic: "PHP", level: "difficile", q: "Que retourne Generator avec yield vs return ?", opts: ["yield suspend l'exécution, return termine", "yield retourne un tableau", "return est plus performant", "Identiques"], ans: 0, exp: "Le Generator <code>yield</code> suspend l'exécution etzeke mémoire, <code>return</code> termine." },
+  { topic: "PHP", level: "difficile", q: "Comment implémenter un iterator personnalisé ?", opts: ["Implémenter Iterator ou IteratorAggregate", "Créer une classe Iterator", "Étendre ArrayObject", "Les deux A et B"], ans: 3, exp: "On implémente <code>Iterator</code> ou <code>IteratorAggregate</code> pour itérer personnalisé." },
+
+  // ═══ JS FACILE ═══
+  { topic: "JS", level: "facile", q: "Comment sélectionner un élément par son ID en JavaScript ?", opts: ["document.getElementById('id')", "document.querySelector('#id')", "Les deux A et B", "document.select('id')"], ans: 2, exp: "Les deux <code>getElementById</code> et <code>querySelector</code> fonctionnent." },
+  { topic: "JS", level: "facile", q: "Comment declares-on une variable constante ?", opts: ["const x = 5;", "let x = 5;", "var x = 5;", "constant x = 5;"], ans: 0, exp: "Le mot-clé <code>const</code> declare une constante non modifiable." },
+  { topic: "JS", level: "facile", q: "Quelle méthode ajoute un élément à la fin d'un tableau ?", opts: [".push()", ".pop()", ".shift()", ".unshift()"], ans: 0, exp: "<code>push()</code> ajoute un élément à la fin du tableau." },
+  { topic: "JS", level: "facile", q: "Comment écouter un clic sur un bouton ?", opts: ["bouton.addEventListener('click', fn)", "bouton.onclick = fn", "Les deux A et B", "bouton.click(fn)"], ans: 2, exp: "Les deux <code>addEventListener</code> et <code>onclick</code> fonctionnent." },
+  { topic: "JS", level: "facile", q: "Quel résultat de '5' + 3 en JavaScript ?", opts: ["8", "\"53\"", "Erreur", "\"8\""], ans: 1, exp: "L'opérateur + en string convertit le nombre : <code>'5' + 3 = '53'</code>." },
+
+  // ═══ JS MOYEN ═══
+  { topic: "JS", level: "moyen", q: "Différence entre <code>let</code> et <code>var</code> ?", opts: ["Aucune différence", "let = portée bloc, var = portée fonction", "var = portée bloc, let = portée fonction", "let ne peut être réassigné"], ans: 1, exp: "<code>let</code> a portée bloc, <code>var</code> portée fonction (hoisting)." },
+  { topic: "JS", level: "moyen", q: "Que retourne <code>typeof null</code> ?", opts: ["'null'", "'undefined'", "'object'", "'boolean'"], ans: 2, exp: "Bogue historique : <code>typeof null</code> retourne <code>'object'</code>." },
+  { topic: "JS", level: "moyen", q: "Quelle méthode filtre un tableau ?", opts: [".map()", ".filter()", ".reduce()", ".find()"], ans: 1, exp: "<code>filter()</code> retourne un nouveau tableau avec les éléments Filtrés." },
+  { topic: "JS", level: "moyen", q: "À quoi sert <code>async/await</code> ?", opts: ["Exécuter en threads", "Écrire async de façon synchrone", "Bloquer l'exécution", "Remplacer callbacks"], ans: 1, exp: "<code>async/await</code> simplifie la gestion des Promises rend le code plus lisible." },
+  { topic: "JS", level: "moyen", q: "Résultat de console.log(0.1 + 0.2 === 0.3) ?", opts: ["true", "false", "undefined", "NaN"], ans: 1, exp: "Représentation IEEE 754 : <code>0.1+0.2 = 0.30000000000000004</code>, donc <code>false</code>." },
+
+  // ═══ JS DIFFICILE ═══
+  { topic: "JS", level: "difficile", q: "Que fait Object.freeze() ?", opts: ["Empêche modifications propriétés", "Supprime l'objet", "Clone l'objet", "Convertit en constante"], ans: 0, exp: "<code>Object.freeze()</code> rend un objet immuable (propriétés non modifiables)." },
+  { topic: "JS", level: "difficile", q: "Quelle est la différence entre map() et forEach() ?", opts: ["map retourne un nouveau tableau", "forEach plus rapide", "map modifie l'original", "Aucune différence"], ans: 0, exp: "<code>map()</code> retourne un nouveau tableau, <code>forEach()</code> non." },
+  { topic: "JS", level: "difficile", q: "Comment fonctionne la closure en JavaScript ?", opts: ["Fonction qui access variables locales externes", "Fonction anonyme", "IIFE", "Fonction récursive"], ans: 0, exp: "Une closure est une fonction qui capture les variables de son scope externe." },
+  { topic: "JS", level: "difficile", q: "Que représente le 'this' dans une arrow function ?", opts: ["L'objet courant défini par l'appel", "Le contexte lexical (scope externe)", "undefined", "window"], ans: 1, exp: "Les arrow functions héritent du <code>this</code> de leur scope parent (lexical)." },
+  { topic: "JS", level: "difficile", q: "Comment éviter la mutation avec spread operator ?", opts: ["const newArr = [...arr]", "const newArr = arr.slice()", "Object.freeze(arr)", "Les deux A et B"], ans: 3, exp: "Le spread <code>...</code> et <code>slice()</code> créent des copies shallow." },
+
+  // ═══ PYTHON FACILE ═══
+  { topic: "Python", level: "facile", q: "Comment afficher un message en Python ?", opts: ["print('message')", "echo 'message'", "console.log('message')", "printf('message')"], ans: 0, exp: "<code>print('message')</code> affiche du texte dans la console." },
+  { topic: "Python", level: "facile", q: "Comment declares-on une variable en Python ?", opts: ["x = 5", "var x = 5", "let x = 5", "int x = 5"], ans: 0, exp: "En Python, pas de mot-clé nécessaire : <code>x = 5</code>." },
+  { topic: "Python", level: "facile", q: "Quelle méthode ajoute un élément à une liste ?", opts: [".append()", ".add()", ".push()", ".insert()"], ans: 0, exp: "<code>liste.append(element)</code> ajoute un élément à la fin de la liste." },
+  { topic: "Python", level: "facile", q: "Comment crée-t-on une boucle for en Python ?", opts: ["for i in range(5):", "for i = 0 to 5:", "foreach i in range(5):", "loop i in range(5):"], ans: 0, exp: "La syntaxe Python : <code>for i in range(5):</code>" },
+  { topic: "Python", level: "facile", q: "Comment obtenir la longueur d'une chaîne ?", opts: ["len(chaine)", "chaine.length()", "chaine.len()", "length(chaine)"], ans: 0, exp: "<code>len()</code> retourne la longueur (string, list, tuple, etc.)." },
+
+  // ═══ PYTHON MOYEN ═══
+  { topic: "Python", level: "moyen", q: "Différence entre liste et tuple ?", opts: ["Aucune différence", "Listes immuables, tuples mutables", "Listes mutables, tuples immuables", "Tuple pour entiers"], ans: 2, exp: "Listes <code>[]</code> mutables, tuples <code>()</code> immuables." },
+  { topic: "Python", level: "moyen", q: "Comment créer un décorateur ?", opts: ["@decorator syntax", "Fonction qui prend fn en paramètre", "Hériter de Decorator", "@staticmethod"], ans: 1, exp: "Un décorateur est une fonction qui enveloppe une autre fonction." },
+  { topic: "Python", level: "moyen", q: "Résultat de type([]) ?", opts: ["&lt;class 'tuple'&gt;", "&lt;class 'dict'&gt;", "&lt;class 'list'&gt;", "&lt;class 'array'&gt;"], ans: 2, exp: "<code>[]</code> est une liste, donc <code>&lt;class 'list'&gt;</code>." },
+  { topic: "Python", level: "moyen", q: "Comment gérer une exception ?", opts: ["try / catch", "try / except", "try / handle", "begin / rescue"], ans: 1, exp: "Python utilise <code>try / except</code> pour les exceptions." },
+  { topic: "Python", level: "moyen", q: "Que fait list(range(1, 6)) ?", opts: ["[0,1,2,3,4,5]", "[1,2,3,4,5]", "[1,2,3,4,5,6]", "[0,1,2,3,4]"], ans: 1, exp: "<code>range(1,6)</code> génère [1,2,3,4,5] (1 inclus, 6 exclu)." },
+
+  // ═══ PYTHON DIFFICILE ═══
+  { topic: "Python", level: "difficile", q: "Quelle méthode magique __new__ fait-elle ?", opts: ["Instancie la classe", "Initialise l'instance", "Appelée avant __init__", "Les deux A et C"], ans: 3, exp: "<code>__new__</code> instancie, <code>__init__</code> initialise l'objet." },
+  { topic: "Python", level: "difficile", q: "Comment créer un générateur en Python ?", opts: ["yield mot-clé", "generator()", "@generator décorateur", "range()"], ans: 0, exp: "Un générateur utilise <code>yield</code> pour suspendre l'exécution." },
+  { topic: "Python", level: "difficile", q: "Que fait *args dans une fonction ?", opts: ["Packs arguments en tuple", "Décompresse une liste", "Créer des arguments optionnels", "Les deux A et C"], ans: 3, exp: "<code>*args</code> packs les arguments en tuple, <code>**kwargs</code> en dict." },
+  { topic: "Python", level: "difficile", q: "Comment fonctionne le GIL en Python ?", opts: ["Interdit threads parallèles CPU", "Limite un thread à la fois", " lock sur objets Python", "Les deux A et B"], ans: 3, exp: "Le GIL (Global Interpreter Lock)empêche l'exécution parallèle de bytecode Python." },
+  { topic: "Python", level: "difficile", q: "What is memoization in Python ?", opts: ["Cache des résultats de fonction", "Fonction récursive", "Decorateur de speed", "Type de variable"], ans: 0, exp: "La mémoizationmet en cache les résultats de fonction pour éviter rekursivcal." },
+
+  // ═══ HTML FACILE ═══
+  { topic: "HTML", level: "facile", q: "Quelle balise définit le titre d'une page HTML ?", opts: ["&lt;title&gt;", "&lt;header&gt;", "&lt;h1&gt;", "&lt;head&gt;"], ans: 0, exp: "<code>&lt;title&gt;</code> définit le titre affiché dans l'onglet du navigateur." },
+  { topic: "HTML", level: "facile", q: "Comment crée-t-on un paragraphe en HTML ?", opts: ["&lt;p&gt;", "&lt;paragraph&gt;", "&lt;text&gt;", "&lt;para&gt;"], ans: 0, exp: "<code>&lt;p&gt;</code> est la balise pour un paragraphe." },
+  { topic: "HTML", level: "facile", q: "Quelle balise crée un lien hypertexte ?", opts: ["&lt;a href='url'&gt;", "&lt;link href='url'&gt;", "&lt;href='url'&gt;", "&lt;url href='url'&gt;"], ans: 0, exp: "<code>&lt;a href='url'&gt;</code> crée un lien hypertexte." },
+  { topic: "HTML", level: "facile", q: "Que signifie le DOCTYPE ?", opts: ["Déclare le type de document", "Crée un document", "Définit le titre", "Lie CSS"], ans: 0, exp: "<code>&lt;!DOCTYPE html&gt;</code> declare que le document estHTML5." },
+  { topic: "HTML", level: "facile", q: "Où place-t-on les balises &lt;title&gt; et &lt;meta&gt; ?", opts: ["Dans &lt;head&gt;", "Dans &lt;body&gt;", "Dans &lt;html&gt;", "N'importe où"], ans: 0, exp: "Les métadonnées (<code>head</code>) vont dans <code>&lt;head&gt;</code>." },
+
+  // ═══ HTML MOYEN ═══
+  { topic: "HTML", level: "moyen", q: "Quelle balise est appropriée pour le contenu principal ?", opts: ["&lt;div id='main'&gt;", "&lt;section&gt;", "&lt;main&gt;", "&lt;article&gt;"], ans: 2, exp: "<code>&lt;main&gt;</code> est la balise sémantique pour le contenu principal." },
+  { topic: "HTML", level: "moyen", q: "Que signifie l'attribut <code>defer</code> dans &lt;script&gt; ?", opts: ["Script ignoré", "Exécuté après le DOM", "Chargé en parallèle", "Mis en cache"], ans: 1, exp: "<code>defer</code> charge le script et lexécute après leDOM parsé." },
+  { topic: "HTML", level: "moyen", q: "Quelle valeur type crée un champ de date ?", opts: ["type='calendar'", "type='datetime'", "type='date'", "type='time'"], ans: 2, exp: "<code>type='date'</code> affiche un sélecteur de date natif." },
+  { topic: "HTML", level: "moyen", q: "Différence entre id et class ?", opts: ["interchangeables", "id unique, class réutilisable", "class unique, id réutilisable", "id pour JS"], ans: 1, exp: "<code>id</code> unique par page ; <code>class</code> peut être surplusieurs éléments." },
+  { topic: "HTML", level: "moyen", q: "Quelle balise intègre une image ?", opts: ["&lt;image src='...'&gt;", "&lt;img src='...'&gt;", "&lt;picture src='...'&gt;", "&lt;media src='...'&gt;"], ans: 1, exp: "<code>&lt;img src='...' alt='...'&gt;</code> est la balise standard pour une image." },
+
+  // ═══ HTML DIFFICILE ═══
+  { topic: "HTML", level: "difficile", q: "Quelle est la différence entre async et defer dans &lt;script&gt; ?", opts: ["Aucune", "async exécute dès chargé, defer après DOM", "defer ASAP, async après parse", "Interchangeables"], ans: 1, exp: "<code>async</code> exécute dès download, <code>defer</code> apresDOM parsed." },
+  { topic: "HTML", level: "difficile", q: "À quoi sert l'attribut loading='lazy' sur &lt;img&gt; ?", opts: ["Charge image automatiquement", "Diffère le chargement hors viewport", "Charge en priorité", "Désactive l'image"], ans: 1, exp: "<code>loading='lazy'</code> diffère le chargement de l'image si hors viewport." },
+  { topic: "HTML", level: "difficile", q: "Comment faire un dégradé CSS dans un canvas HTML ?", opts: ["createLinearGradient()", "gradient()", "canvas.gradient()", "Les deux A et C"], ans: 0, exp: "<code>ctx.createLinearGradient(x0,y0,x1,y1)</code> crée un dégradé." },
+  { topic: "HTML", level: "difficile", q: "Que représente l'attribut crossorigin sur &lt;script&gt; ou &lt;img&gt; ?", opts: ["Autorise CORS", "Crée un cross-origin", "Charge depuis CDN", "Désactive same-origin"], ans: 0, exp: "<code>crossorigin</code> permet de charger des ressources depuis autres domaines." },
+  { topic: "HTML", level: "difficile", q: "Comment intégrer SVGinline en HTML ?", opts: ["&lt;svg&gt;...&lt;/svg&gt;", "&lt;inline-svg&gt;", "&lt;object type='image/svg+xml'&gt;", "Les deux A et C"], ans: 2, exp: "On peut inline <code>&lt;svg&gt;</code> ou via <code>&lt;object&gt;</code>." },
+
+  // ═══ CSS FACILE ═══
+  { topic: "CSS", level: "facile", q: "Comment select un élément par son ID en CSS ?", opts: ["#id", ".id", "id", "*id"], ans: 0, exp: "En CSS, le sélecteur <code>#id</code> ciblet élément par id." },
+  { topic: "CSS", level: "facile", q: "Comment select un élément par sa classe ?", opts: [".classe", "#classe", "classe", "*classe"], ans: 0, exp: "En CSS, <code>.classe</code> ciblet éléments par classe." },
+  { topic: "CSS", level: "facile", q: "Quelle propriété change la couleur du texte ?", opts: ["color", "text-color", "font-color", "foreground"], ans: 0, exp: "<code>color</code> definit la couleur du texte." },
+  { topic: "CSS", level: "facile", q: "Comment change-t-on la taille de police ?", opts: ["font-size", "text-size", "font-size", "text-dimension"], ans: 2, exp: "<code>font-size</code>definit la taille de police." },
+  { topic: "CSS", level: "facile", q: "Quelle propriété change la couleur de fond ?", opts: ["background-color", "bg-color", "background", "bg"], ans: 0, exp: "<code>background-color</code> définit la couleur de fond." },
+
+  // ═══ CSS MOYEN ═══
+  { topic: "CSS", level: "moyen", q: "Quelle propriété crée un layout grille 2D ?", opts: ["display: flex", "display: grid", "display: table", "display: block"], ans: 1, exp: "<code>display: grid</code> active CSS Grid pour les layouts 2D." },
+  { topic: "CSS", level: "moyen", q: "Ordre du modèle de boîte (ext→int) ?", opts: ["margin → border → padding → content", "padding → border → margin → content", "border → margin → padding → content", "content → padding → margin → border"], ans: 0, exp: "Modèle boîte : <strong>margin</strong> → <strong>border</strong> → <strong>padding</strong> → <strong>content</strong>." },
+  { topic: "CSS", level: "moyen", q: "Que fait box-sizing: border-box ?", opts: ["Ajoute bordure visible", "Inclut padding+border dans width/height", "Supprime margin", "Modèle 3D"], ans: 1, exp: "Avec <code>border-box</code>, width inclut padding et border." },
+  { topic: "CSS", level: "moyen", q: "Quelle pseudo-clase cible le premier enfant ?", opts: [":first-of-type", ":first-child", ":nth-child(1)", "B et C"], ans: 3, exp: "<code>:first-child</code> et <code>:nth-child(1)</code> ciblent le premier enfant." },
+  { topic: "CSS", level: "moyen", q: "Centrer avec Flexbox ?", opts: ["align-items:center; justify-content:center;", "margin:auto;", "text-align:center;", "position:center;"], ans: 0, exp: "Flexbox: <code>justify-content:center</code> (axe X) + <code>align-items:center</code> (axe Y)." },
+
+  // ═══ CSS DIFFICILE ═══
+  { topic: "CSS", level: "difficile", q: "Comment créer une grille avec areas nomnées ?", opts: ["grid-template-areas", "grid-area", "grid-areas", "areas"], ans: 0, exp: "<code>grid-template-areas</code> définit des areas nomnées pour le layout." },
+  { topic: "CSS", level: "difficile", q: "Que fait minmax() dans grid ?", opts: ["Taille min-max dynamique", "Minimise la grille", "Maximize performance", "Crée un min de grid"], ans: 0, exp: "<code>minmax(min, max)</code> définit une plage de taille pour tracks." },
+  { topic: "CSS", level: "difficile", q: "Comment fonctionne grid-auto-flow=dense ?", opts: ["Remplit les trous", "Étend les cellules", "Dense mode", "Auto-fit"], ans: 0, exp: "<code>grid-auto-flow: dense</code> remplit automatiquement les espaces vides." },
+  { topic: "CSS", level: "difficile", q: "Quelle-est la différence entre clamp() et min() / max() ?", opts: ["clamp borne inf+sup, min/max borne unique", "clamp pour les images", "min/max pour les grids", "Identiques"], ans: 0, exp: "<code>clamp(min, pref, max)</code> borne inférieure, preferée, et supérieure." },
+  { topic: "CSS", level: "difficile", q: "Comment faire un container queries ?", opts: ["@container", "@media", "@supports", "container-type"], ans: 0, exp: "<code>@container</code> (règle at) permet des media queries sur le container(parent). " },
+
+  // ═══ REACT FACILE ═══
+  { topic: "React", level: "facile", q: "Comment créer un composant fonctionnel ?", opts: ["function Composant() {}", "createComponent()", "new Component()", "Component => {}"], ans: 0, exp: "Un composant fonctionnel est une fonction qui retourne du JSX." },
+  { topic: "React", level: "facile", q: "Qu'est-ce que JSX ?", opts: ["JavaScript XML", "JavaScript + HTML", "JavaScript syntax", "JSON"], ans: 0, exp: "JSX est une extension syntaxe JavaScript qui ressemble à HTML." },
+  { topic: "React", level: "facile", q: "Comment afficher une variable en JSX ?", opts: ["{var}", "${var}", "#{var}", "{{var}}"], ans: 0, exp: "En JSX, lesvariables s'affichent avec <code>{variable}</code>." },
+  { topic: "React", level: "facile", q: "Comment passer des données à un composant enfant ?", opts: ["props", "state", "attributes", "data"], ans: 0, exp: "Les données se passent via les <code>props</code> (propriétés)." },
+  { topic: "React", level: "facile", q: "Quelle méthode rend un composant React dans le DOM ?", opts: ["ReactDOM.render()", "React.render()", "renderDOM()", "mount()"], ans: 0, exp: "<code>ReactDOM.render(element, container)</code> monte le composant." },
+
+  // ═══ REACT MOYEN ═══
+  { topic: "React", level: "moyen", q: "Quel hook gère l'état local ?", opts: ["useEffect()", "useContext()", "useState()", "useReducer()"], ans: 2, exp: "<code>useState()</code> retourne [valeur, setter] pour l'état local." },
+  { topic: "React", level: "moyen", q: "À quoi sert useEffect ?", opts: ["Créer un composant", "Effets de bord (API, timers...)", "Mettre à jour le style", "Remplacer les classes"], ans: 1, exp: "<code>useEffect</code> gère les effets de bord après le rendu." },
+  { topic: "React", level: "moyen", q: "Différence props vs state ?", opts: ["Aucune (synonymes)", "props internes, state parent", "props parent (immuables), state interne (mutable)", "State partagé"], ans: 2, exp: "<code>props</code> viennent du parent (immuables), <code>state</code>est interne." },
+  { topic: "React", level: "moyen", q: "Qu'est-ce que le Virtual DOM ?", opts: ["DOM en BDD", "Représentation légère en mémoire", "DOM natif", "Plugin"], ans: 1, exp: "Virtual DOM est une copie en mémoire, React compare et met à jour optimisé." },
+  { topic: "React", level: "moyen", q: "Syntaxe rendu conditionnel en JSX ?", opts: ["if return <Comp/> uniquement", "{cond ? A : B} ou {cond && A}", "switch case", "v-if"], ans: 1, exp: "JSX utilise ternaire <code>cond ? A : B</code> ou <code>&&</code> logique." },
+
+  // ═══ REACT DIFFICILE ═══
+  { topic: "React", level: "difficile", q: "Comment éviter les re-rendus inutiles ?", opts: ["React.memo()", "useMemo()", "useCallback()", "Les trois"], ans: 3, exp: "<code>React.memo()</code>, <code>useMemo</code>, et <code>useCallback</code> optimisent." },
+  { topic: "React", level: "difficile", q: "Quelle-est la différence entre useMemo et useCallback ?", opts: ["useMemo=mémorise valeur, useCallback=fn", "Aucune", "useCallback plus performant", "Inversées"], ans: 0, exp: "<code>useMemo</code> mémorise un calcul, <code>useCallback</code> une fonction." },
+  { topic: "React", level: "difficile", q: "Comment implémenter un custom hook ?", opts: ["Fonction avec use...", "useCustom()", "hookCustom()", "createHook()"], ans: 0, exp: "Un custom hook est une fonction qui utilise d'autres hooks (prefixuse...)." },
+  { topic: "React", level: "difficile", q: "Que fait React.lazy() ?", opts: ["Charge lazy component", "Désactive render", "Cache le composant", "Optimise"], ans: 0, exp: "<code>React.lazy()</code> permet le code splitting et chargement lazy." },
+  { topic: "React", level: "difficile", q: "Comment gérer le contexte plusieurs Providers ?", opts: ["Un seul Provider par contexte", "Plusieurs Providers OK", "Pas de Provider", "customProvider"], ans: 1, exp: "On peut emboîter plusieurs Providers (lecture la plus proche)." },
+
+  // ═══ POO FACILE ═══
+  { topic: "POO", level: "facile", q: "Qu'est-ce qu'un objet en POO ?", opts: ["Variable", "Instance d'une classe", "Fonction", "Tableau"], ans: 1, exp: "Un objet est une <strong>instance</strong> d'une classe." },
+  { topic: "POO", level: "facile", q: "Comment declares-on une classe ?", opts: ["class Nom {}", "class Nom()", "new Nom", "Nom.class"], ans: 0, exp: "On declare une classe avec <code>class Nom { }</code>." },
+  { topic: "POO", level: "facile", q: "Qu'est-ce qu'un constructeur ?", opts: ["Méthode d'initialisation", "Méthode de destruction", "Propriété", "Static"], ans: 0, exp: "Le constructeur est appelé à l'instanciation pour initialiser l'objet." },
+  { topic: "POO", level: "facile", q: "Différence entre méthode et propriété ?", opts: ["Méthode=Fonction, Propriété=Donnée", "Identiques", "Propriété static", "Méthode abstraite"], ans: 0, exp: "Les propriétés stockent des données, les méthodes définissent des comportements." },
+  { topic: "POO", level: "facile", q: "Que fait 'new MaClasse()' ?", opts: ["Appelle le constructeur", "Définit la classe", "Crée la définition", "Étend la classe"], ans: 0, exp: "<code>new</code> appelle le constructeur pour créer une nouvelle instance." },
+
+  // ═══ POO MOYEN ═══
+  { topic: "POO", level: "moyen", q: "Principe encapsulation ?", opts: ["Héritage", "Polymorphisme", "Cacher détails implémentation", "Abstraction"], ans: 2, exp: "L'<strong>encapsulation</strong> protège les données via modificateurs d'accès." },
+  { topic: "POO", level: "moyen", q: "Qu'est-ce que le polymorphisme ?", opts: ["Héritage multiple", "Objet = plusieurs formes", "Plusieurs constructeurs", "Instanciation"], ans: 1, exp: "Le <strong>polymorphisme</strong> permet à des objets de classes différentes d'être traitésvia une interface commune." },
+  { topic: "POO", level: "moyen", q: "Différence classe abstraite vs interface ?", opts: ["Aucune", "Abstraite avec implémentations, interface signatures", "Interfaceinstanciable", "Abstraite sans attributs"], ans: 1, exp: "Classe abstraite peut avoir code partiel; interface seulement contrats." },
+  { topic: "POO", level: "moyen", q: "Qu'est-ce que l'héritage ?", opts: ["Copie d'objet", "Réutilisation code classe parent", "Surcharge méthode", "Instanciation multiple"], ans: 1, exp: "L'<strong>héritage</strong> permet à une classe enfant de réutiliser les membres du parent." },
+  { topic: "POO", level: "moyen", q: "Que signifie SOLID 'S' ?", opts: ["Classe statique", "Une raison de changer (responsabilité unique)", "Méthode unique", "Héritage unique"], ans: 1, exp: "Le <strong>SRP</strong> stipule qu'une classe n'a qu'une responsabilité." },
+
+  // ═══ POO DIFFICILE ═══
+  { topic: "POO", level: "difficile", q: "Que désigne le pattern Observer ?", opts: ["Observateur événements", "Objet observé", "Les deux A et B", "Pas de pattern"], ans: 2, exp: "Le pattern Observer définit une relation un-plus-plusieurs avec notification." },
+  { topic: "POO", level: "difficile", q: "Différence composition vs héritage ?", opts: ["Héritage prefers", "Composition = 'a un', Héritage = 'est un'", "Identiques", "Composition only"], ans: 1, exp: "Composition (has-a) favorise réutilisationflexible vs héritage (is-a). " },
+  { topic: "POO", level: "difficile", q: "Que fait le pattern Factory ?", opts: ["Crée objets", "Détruit objets", "Clone objets", "Cache objets"], ans: 0, exp: "Le pattern Factory encapsule la logique de création d'objets." },
+  { topic: "POO", level: "difficile", q: "Qu'est-ce que l'injection de dépendances ?", opts: ["Injecter code", "Passer dépendances via constructeur/setter", "Héritage", "global"], ans: 1, exp: "L'injection de dépendances passe les dépendances depuis l'extérieur (pas de creation interne)." },
+  { topic: "POO", level: "difficile", q: "Que signifie SOLID 'L' ?", opts: ["Liskov Substitution", "Layered architecture", "Loose coupling", "Long methods"], ans: 0, exp: "Le <strong>Liskov Substitution Principle</strong> : les enfants doivent pouvoir remplacer les parents." },
+
+  // ═══ UML FACILE ═══
+  { topic: "UML", level: "facile", q: "Que représente un diagramme de classes ?", opts: ["Arbre genealogique", "Structure classes et relations", "Flux de données", "Temps"], ans: 1, exp: "Le diagramme de classes montre la structure statique avec attributs et méthodes." },
+  { topic: "UML", level: "facile", q: "Que signifie une flèche en UML ?", opts: ["Héritage", "Association", "Détermination", "Les deux A et C"], ans: 0, exp: "Une flèche denote généralement l'<strong>héritage</strong> ou une dépendance." },
+  { topic: "UML", level: "facile", q: "Que représente un '+' devant un membre ?", opts: ["Privé", "Public", "Protégé", "Package"], ans: 1, exp: "<code>+</code> = <strong>public</strong>, <code>-</code> = private, <code>#</code> = protected." },
+  { topic: "UML", level: "facile", q: "Que montre un actor dans un cas d'utilisation ?", opts: ["Système", "Utilisateur externe", "Base de données", "Application"], ans: 1, exp: "Un actor représente un utilisateur externe qui interagit avec le système." },
+  { topic: "UML", level: "facile", q: "Que représente unlosange vide en UML ?", opts: ["Composition", "Agrégation", "Héritage", "Association"], ans: 1, exp: "Losange vide = <strong>agrégation</strong>, losange plein = <strong>composition</strong>." },
+
+  // ═══ UML MOYEN ═══
+  { topic: "UML", level: "moyen", q: "Quel diagramme UML montre la structure ?", opts: ["Séquence", "Cas utilisation", "Classes", "Activité"], ans: 2, exp: "Le diagramme de classes représente la structure statique." },
+  { topic: "UML", level: "moyen", q: "Losange plein (◆) = ?", opts: ["Héritage", "Dépendance", "Agrégation", "Composition"], ans: 3, exp: "Losange plein = <strong>composition</strong> (cycle de vie lié)." },
+  { topic: "UML", level: "moyen", q: "À quoi sert le diagramme de cas d'utilisation ?", opts: ["Base de données", "Interactions acteur-système fonctionnel", "Ordre exécution", "États objet"], ans: 1, exp: "UC décrit ce que fait le système du point de vue fonctionnel." },
+  { topic: "UML", level: "moyen", q: "Quel diagramme montre les messages chronologiques ?", opts: ["Classes", "Composants", "Séquence", "Déploiement"], ans: 2, exp: "Le diagramme de séquence montre les interactions dans le temps." },
+  { topic: "UML", level: "moyen", q: "Multiplicité '1..*' = ?", opts: ["Exactly un", "Zéro ou plus", "Un ou plus", "Un à dix"], ans: 2, exp: "<code>1..*</code> signifie <strong>un ou plusieurs</strong> (obligatoire sans limite)." },
+
+  // ═══ UML DIFFICILE ═══
+  { topic: "UML", level: "difficile", q: "Que représente un 'package' en UML ?", opts: ["Bibliothèque", "Groupement logique d'éléments", "Classe", "Interface"], ans: 1, exp: "Un <strong>package</strong> organise les éléments en groupes logiques." },
+  { topic: "UML", level: "difficile", q: "Quelle est la différence entre include et extend dans UC ?", opts: ["Aucune", "Include=obligatoire, Extend=optionnel+extension", "Include optionnel", "Extend obligatoire"], ans: 1, exp: "<code>include</code> est toujours exécuté (obligatoire); <code>extend</code>ajoute un scénario optionnel." },
+  { topic: "UML", level: "difficile", q: "Que montre un diagramme d'états Transitions ?", opts: ["États et transitions entre eux", "Architecture", "Flux de données", "Classes"], ans: 0, exp: "Le diagramme États montre les состояnements possibles et les transitions." },
+  { topic: "UML", level: "difficile", q: "Comment représenter une interface en UML ?", opts: ["<<interface>>", "Classe en italique", "Lollipop", "Les deux A et C"], ans: 3, exp: "Interface = stéréotype <code>&lt;&lt;interface&gt;&gt;</code> ou symbole lollipop." },
+  { topic: "UML", level: "difficile", q: "Que représente une dépendance (flèche pointillée) ?", opts: ["Héritage fort", "Dépendance faible (utilise)", "Composition", "Aggregation"], ans: 1, exp: "Une dépendance (pointillée) indique qu'une classe utilise temporairement une autre." }
+];
+
+// ── State ──
+let currentIndex = 0;
+let score = 0;
+let topicScores = {};
+let answered = false;
+let selectedLevel = "moyen";
+let topicSelections = {};
+TOPICS.forEach(t => topicSelections[t] = 5);
+let activeQuiz = [];
+
+
+
+// ── Screens ──
+function show(id) {
+  ['screen-welcome','screen-config','screen-quiz','screen-score'].forEach(s => {
+    document.getElementById(s).classList.add('hidden');
+  });
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function showWelcome() { show('screen-welcome'); }
+function showConfig() { show('screen-config'); renderConfigTopics(); }
+
+// ── Config ──
+function selectLevel(level) {
+  selectedLevel = level;
+  document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.level-btn.' + level).classList.add('active');
+}
+
+function renderConfigTopics() {
+  const container = document.getElementById('topics-config');
+  container.innerHTML = '';
+  TOPICS.forEach(topic => {
+    const row = document.createElement('div');
+    row.className = 'topic-row';
+    row.dataset.topic = topic;
+    const color = TOPIC_COLORS[topic];
+    row.innerHTML = `
+      <div class="topic-row-left">
+        <div class="dot" style="background:${color}"></div>
+        <span>${topic}</span>
+      </div>
+      <div class="pill-group">
+        ${[0,1,2,3,4,5].map(n => `<button class="pill ${topicSelections[topic]===n?'active':''}" onclick="selectPill('${topic}',${n})">${n}</button>`).join('')}
+      </div>
+    `;
+    container.appendChild(row);
+  });
+  updateTotal();
+}
+
+function selectPill(topic, n) {
+  topicSelections[topic] = n;
+  renderConfigTopics();
+}
+
+function updateTotal() {
+  const total = Object.values(topicSelections).reduce((a,b)=>a+b,0);
+  document.getElementById('config-total').textContent = total;
+  const btn = document.getElementById('btn-start-config');
+  const hint = document.getElementById('config-hint');
+  if(total===0){btn.disabled=true;hint.classList.add('show');}
+  else{btn.disabled=false;hint.classList.remove('show');}
+}
+
+function setAllTopics(n) {
+  TOPICS.forEach(t => topicSelections[t] = n);
+  renderConfigTopics();
+}
+
+function shuffle(arr) {
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return arr;
+}
+
+function startConfiguredQuiz() {
+  const total = Object.values(topicSelections).reduce((a,b)=>a+b,0);
+  if(total===0) return;
+  
+  activeQuiz = [];
+  topicScores = {};
+  TOPICS.forEach(t => topicScores[t] = {correct:0,total:0});
+  
+  TOPICS.forEach(topic => {
+    const count = topicSelections[topic];
+    if(count===0) return;
+    const pool = QUESTIONS.filter(q=>q.topic===topic && q.level===selectedLevel);
+    const shuffled = shuffle([...pool]);
+    const selected = shuffled.slice(0,count);
+    activeQuiz.push(...selected);
+    topicScores[topic].total = selected.length;
+  });
+  
+  activeQuiz = shuffle(activeQuiz);
+  currentIndex = 0;
+  score = 0;
+  answered = false;
+  show('screen-quiz');
+  renderQuestion();
+}
+
+// ── Render Question ──
+function renderQuestion() {
+  answered = false;
+  const q = activeQuiz[currentIndex];
+  const total = activeQuiz.length;
+  const progress = ((currentIndex) / total) * 100;
+
+  document.getElementById('q-count').textContent = `${currentIndex + 1} / ${total}`;
+  document.getElementById('progress-bar').style.width = progress + '%';
+  document.getElementById('score-live').textContent = `Score: ${score}`;
+
+  const tag = document.getElementById('topic-tag');
+  tag.textContent = q.topic;
+  tag.className = 'topic-tag ' + q.topic;
+
+  document.getElementById('question-text').innerHTML = q.q;
+
+  const letters = ['A', 'B', 'C', 'D'];
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    list.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback-box');
+  fb.className = 'feedback-box';
+  fb.innerHTML = '';
+
+  document.getElementById('next-btn').style.display = 'none';
+}
+
+// ── Select Answer ──
+function selectAnswer(chosen) {
+  if (answered) return;
+  answered = true;
+
+  const q = activeQuiz[currentIndex];
+  const buttons = document.querySelectorAll('.option-btn');
+  buttons.forEach(b => b.disabled = true);
+
+  topicScores[q.topic].total++;
+
+  const fb = document.getElementById('feedback-box');
+
+  if (chosen === q.ans) {
+    buttons[chosen].classList.add('correct');
+    score++;
+    topicScores[q.topic].correct++;
+    fb.className = 'feedback-box show';
+    fb.innerHTML = `✅ <strong>Bonne réponse !</strong> ${q.exp}`;
+  } else {
+    buttons[chosen].classList.add('wrong');
+    buttons[q.ans].classList.add('correct');
+    fb.className = 'feedback-box show wrong-fb';
+    fb.innerHTML = `❌ <strong>Mauvaise réponse.</strong> La bonne réponse était <strong>${['A','B','C','D'][q.ans]}</strong>. ${q.exp}`;
+  }
+
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.style.display = 'block';
+  nextBtn.textContent = currentIndex + 1 < activeQuiz.length ? 'Question suivante →' : 'Voir les résultats →';
+}
+
+// ── Next Question ──
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex < activeQuiz.length) {
+    renderQuestion();
+  } else {
+    showScore();
+  }
+}
+
+// ── Score Screen ──
+function showScore() {
+  show('screen-score');
+  const total = activeQuiz.length;
+  document.getElementById('final-score').textContent = score;
+  document.querySelector('.score-label').textContent = '/ ' + total;
+
+  const pct = total>0 ? Math.round((score / total) * 100) : 0;
+  const circle = document.getElementById('score-circle');
+  let borderColor = '#ef4444';
+  let msg = 'Continuez à pratiquer 💪';
+  if (pct >= 80) { borderColor = '#22c55e'; msg = 'Excellent travail ! 🎉'; }
+  else if (pct >= 60) { borderColor = '#eab308'; msg = 'Bon résultat, continuez ! 👍'; }
+  else if (pct >= 40) { borderColor = '#f97316'; msg = 'Pas mal, encore un effort ! 📚'; }
+  circle.style.borderColor = borderColor;
+
+  document.getElementById('score-title').textContent = `${pct}% de réussite`;
+  document.getElementById('score-sub').textContent = msg;
+
+  const bd = document.getElementById('breakdown');
+  bd.innerHTML = '';
+  Object.entries(topicScores).forEach(([topic, data]) => {
+    if(data.total===0) return;
+    const item = document.createElement('div');
+    item.className = 'breakdown-item';
+    item.innerHTML = `
+      <div class="dot" style="background:${TOPIC_COLORS[topic]}"></div>
+      <span>${topic}</span>
+      <span class="score-val">${data.correct} / ${data.total}</span>
+    `;
+    bd.appendChild(item);
+  });
+}
+
+function restartQuiz() {
+  startConfiguredQuiz();
+}
+</script>
+
+</body>
+</html>
